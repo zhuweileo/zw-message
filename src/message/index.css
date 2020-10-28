@@ -1,0 +1,11 @@
+.zw-message-container {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 1000;
+}
+.zw-message-item {
+    display: inline-block;
+    background: #fff;
+}
