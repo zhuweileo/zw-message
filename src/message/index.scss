@@ -1,0 +1,45 @@
+.zw-message-container {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 1000;
+}
+.zw-message-item {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    box-sizing: border-box;
+    font-size: 14px;
+    display: inline-block;
+    padding: 0 16px;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05);
+    pointer-events: all;
+}
+.zw-message-item-icon {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    position: absolute;
+    top: calc(50% - 7px);
+    left: 10px;
+    &-success{
+        background: url('../assets/success.png') center/ 14px 14px no-repeat;
+    }
+    &-info{
+        background: url('../assets/info.png') center/ 14px 14px no-repeat;
+    }
+    &-error{
+        background: url('../assets/error.png') center/ 14px 14px no-repeat;
+    }
+    &-warn{
+        background: url('../assets/warn.png') center/ 14px 14px no-repeat;
+    }
+}
+
+
+.zw-message-item-text{
+    margin-left: 20px;
+}

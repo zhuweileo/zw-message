@@ -1,19 +1,21 @@
+import peerDepsExternal from "rollup-plugin-peer-deps-external";
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from "rollup-plugin-typescript2";
 import postcss from "rollup-plugin-postcss";
+// 这个插件一定要用 8.0.0 的，最新版10.0.0 只能用于postcss 8.0，而rollup-plugin-postcss 中依赖的 postcss 是7.x.x版本的
+import url from 'postcss-url';
 import pkg from './package.json';
 
 export default [
-	// browser-friendly UMD build
 	{
 		input: 'src/index.ts',
-		external: ['react', 'react-dom'],
 		output: [
 			{
 				file: pkg.main,
 				format: "cjs",
-				sourcemap: true
+				sourcemap: true,
+				exports: 'auto',
 			},
 			{
 				file: pkg.module,
@@ -22,27 +24,21 @@ export default [
 			}
 		],
 		plugins: [
-			resolve(), 
+			peerDepsExternal(),
+			resolve(),
 			commonjs(),
 			typescript({ useTsconfigDeclarationDir: true }),
 			postcss({
 				extract: true,
+				plugins: [
+					url({
+						url: "inline", // enable inline assets using base64 encoding
+						maxSize: 10, // maximum file size to inline (in kilobytes)
+						fallback: "copy", // fallback method to use if max size is exceeded
+					}),
+				]
 			}),
 		]
 	},
 
-	// CommonJS (for Node) and ES module (for bundlers) build.
-	// (We could have three entries in the configuration array
-	// instead of two, but it's quicker to generate multiple
-	// builds from a single configuration where possible, using
-	// an array for the `output` option, where we can specify
-	// `file` and `format` for each target)
-	// {
-	// 	input: 'src/main.js',
-	// 	external: ['react', 'react-dom'],
-	// 	output: [
-	// 		{ file: pkg.main, format: 'cjs' },
-	// 		{ file: pkg.module, format: 'es' }
-	// 	]
-	// }
 ];

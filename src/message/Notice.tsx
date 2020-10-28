@@ -3,22 +3,27 @@ import React, { useEffect } from 'react';
 export default function Notice(props: any) {
     const {
         delay = 1.5,
-        onClose = () => {},
+        onClose = () => { },
         style,
         children,
+        type = 'info',
     } = props;
 
     const cls = 'zw-message-item';
     useEffect(() => {
-        // console.log(props);
         const timer = setTimeout(() => {
             onClose();
-            console.log('jajajajj');
         }, delay * 1000);
-        // return () => {
-        //     console.log('clear,,');
-        //     clearTimeout(timer);
-        // };
+        return () => {
+            clearTimeout(timer);
+        };
     }, []);
-    return <div className={cls} style={style}>{children}</div>;
+
+    const iconCls =  `${cls}-icon`;
+    const iconTypeCls = `${cls}-icon-${type}`;
+    const textCls = `${cls}-text`;
+
+    return <div className={cls} style={style}>
+        <span className={`${iconCls} ${iconTypeCls}`}></span><span className={textCls}>{children}</span>
+    </div>;
 }

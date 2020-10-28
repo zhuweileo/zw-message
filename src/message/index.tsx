@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import Notification from './Notification';
-import './index.css';
+import './index.scss';
 
 const cls = 'zw-message-container';
 
@@ -23,17 +23,17 @@ function notifier() {
 notifier();
 
 const message = {
-    success() {
-
+    success(msg) {
+        noticeInstance.add({ message: msg, type: 'success' });
     },
-    info(msg: any) {
-        noticeInstance.add({ message: msg });
+    info(msg) {
+        noticeInstance.add({ message: msg, type: 'info' });
     },
-    error() {
-
+    error(msg) {
+        noticeInstance.add({ message: msg, type: 'error' });
     },
-    warn() {
-
+    warn(msg) {
+        noticeInstance.add({ message: msg, type: 'warn' });
     },
 };
 

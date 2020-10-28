@@ -1,1 +1,1 @@
-export * as message from './message/index';
+export { default } from './message/index';
