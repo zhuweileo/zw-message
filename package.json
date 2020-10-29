@@ -2,13 +2,14 @@
   "name": "message",
   "version": "1.0.0",
   "description": "",
-  "main": "build/index.js",
-  "module": "build/index.es.js",
+  "main": "build/lib/index.js",
+  "module": "build/es/index.es.js",
   "files": [
     "build"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "docz:dev": "docz dev",
     "build": "rollup -c"
   },
   "keywords": [],
@@ -19,9 +20,14 @@
     "@rollup/plugin-node-resolve": "^10.0.0",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
+    "docz": "^2.3.1",
+    "gatsby-plugin-sass": "^2.3.21",
     "node-sass": "^4.14.1",
     "postcss-url": "8.0.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "rollup": "^2.32.1",
+    "rollup-plugin-clear": "^2.0.7",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^3.1.8",
     "rollup-plugin-styles": "^3.11.0",

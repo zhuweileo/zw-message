@@ -6,34 +6,48 @@ import './index.scss';
 const cls = 'zw-message-container';
 
 let noticeInstance;
-function notifier() {
-    let container = document.querySelector(`.${cls}`);
-    if (!container) {
-        container = document.createElement('div');
-        container.classList.add(cls);
-        document.body.appendChild(container);
-    }
-    function ref(instance) {
-        if (instance) {
-            noticeInstance = instance;
+function getNoticeInstance() {
+    return new Promise((resolve, reject) => {
+        let container = document.querySelector(`.${cls}`);
+        if (!container) {
+            container = document.createElement('div');
+            container.classList.add(cls);
+            document.body.appendChild(container);
         }
-    }
-    render(<Notification ref={ref} />, container);
+        function ref(instance) {
+            if (instance) {
+                // noticeInstance = instance;
+                resolve(instance);
+            }
+        }
+        render(<Notification ref={ref} />, container);
+    })
 }
-notifier();
+
+
+function notice(msg, type) {
+    if (!noticeInstance) {
+        getNoticeInstance().then((instance) => {
+            noticeInstance = instance;
+            noticeInstance.add({ message: msg, type });
+        });
+        return;
+    }
+    noticeInstance.add({ message: msg, type });
+}
 
 const message = {
     success(msg) {
-        noticeInstance.add({ message: msg, type: 'success' });
+        notice(msg, 'success')
     },
     info(msg) {
-        noticeInstance.add({ message: msg, type: 'info' });
+        notice(msg, 'info')
     },
     error(msg) {
-        noticeInstance.add({ message: msg, type: 'error' });
+        notice(msg, 'error')
     },
     warn(msg) {
-        noticeInstance.add({ message: msg, type: 'warn' });
+        notice(msg, 'warn')
     },
 };
 

@@ -1,0 +1,20 @@
+---
+name: message
+route: /
+---
+import { Playground } from 'docz';
+import message from '../src/message/index.tsx';
+
+# message
+
+## Basic usage
+
+<Playground>
+    <div>
+    {
+        ['success', 'warn', 'info', 'error'].map(type => {
+            return <button key={type} onClick={() => { message[type]('hahahahah') }}>{type}</button>
+        })
+    }
+    </div>
+</Playground>
