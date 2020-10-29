@@ -1,29 +1,40 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function Notice(props: any) {
     const {
-        delay = 1.5,
+        duration,
         onClose = () => { },
         style,
         children,
         type = 'info',
     } = props;
 
-    const cls = 'zw-message-item';
+    const [isEnd, setIsEnd] = useState(false);
+
     useEffect(() => {
         const timer = setTimeout(() => {
-            onClose();
-        }, delay * 1000);
+            setIsEnd(true);
+            setTimeout(function () {
+                onClose();
+            }, 500)
+        }, duration * 1000);
         return () => {
             clearTimeout(timer);
         };
     }, []);
 
-    const iconCls =  `${cls}-icon`;
-    const iconTypeCls = `${cls}-icon-${type}`;
-    const textCls = `${cls}-text`;
+    const prefix = 'zw-message-item'
+    const cls = isEnd ? `${prefix} ${prefix}-leave` : prefix;
+    const wrapCls = `${prefix}-wrap`
+    const iconCls = `${prefix}-icon`;
+    const iconTypeCls = `${prefix}-icon-${type}`;
+    const textCls = `${prefix}-text`;
 
-    return <div className={cls} style={style}>
-        <span className={`${iconCls} ${iconTypeCls}`}></span><span className={textCls}>{children}</span>
-    </div>;
+    return (
+        <div className={wrapCls}>
+            <div className={cls} style={style}>
+                <span className={`${iconCls} ${iconTypeCls}`}></span><span className={textCls}>{children}</span>
+            </div>
+        </div>
+    )
 }

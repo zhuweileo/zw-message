@@ -1,5 +1,5 @@
 import React, {
-    useState, useEffect, forwardRef, useImperativeHandle, useCallback, useReducer,
+    useState, useEffect, forwardRef, useImperativeHandle, useCallback, useReducer, useRef,
 } from 'react';
 import Notice from './Notice';
 
@@ -9,57 +9,91 @@ function getUuid() {
     return `zw-message-${seed++}`;
 }
 
-const init = { notices: [] };
+const initNotices = [];
 
 function reducer(state, action) {
     switch (action.type) {
-        case 'add':
-            return { notices: [...state.notices, action.item] };
+        case 'add': {
+            const { maxCount } = action; 
+            const origin = [...state, action.item];
+            let res = [];
+            if(maxCount && origin.length > maxCount) {
+                res = origin.slice(origin.length - maxCount);
+            } else {
+                res = origin;
+            }
+            
+            return res;
+        }
         case 'remove': {
-            const noticeUpdate = state.notices.filter(item => item.key !== action.key);
-            return { notices: noticeUpdate };
+            const noticeUpdate = state.filter(item => item.key !== action.key);
+            return noticeUpdate;
         }
         default:
             throw new Error();
     }
 }
 
-function Notification(props: any, ref: any) {
-    const [state, dispatch] = useReducer(reducer, init);
+const defaultConfig = {
+    maxCount: 0,
+    top: 50,
+    duration: 1.5,
+}
 
-    function add({ message, type }: any) {
-        dispatch({ type: 'add', item: { key: getUuid(), message, type } });
+function Notification(props, ref) {
+    const [notices, dispatch] = useReducer(reducer, initNotices);
+    const [conTop, setConTop] = useState(defaultConfig.top);
+
+    const maxCountRef = useRef(defaultConfig.maxCount);
+    const durationRef = useRef(defaultConfig.duration);
+
+    function add({ content, type, duration }) {
+        dispatch({
+            type: 'add',
+            maxCount: maxCountRef.current,
+            item: {
+                key: getUuid(),
+                content,
+                type,
+                duration: duration || durationRef.current, 
+            }
+        });
     }
 
     function remove(key: any) {
         dispatch({ type: 'remove', key });
     }
 
+    function config(configs) {
+        const { maxCount, top } = configs;
+        if (top) {
+            setConTop(top);
+        }
+        if (maxCount) {
+            maxCountRef.current = maxCount;
+        }
+    }
 
     useImperativeHandle(ref, () => {
         return {
             add,
             remove,
+            config,
         };
     });
 
-    function onClose(key: any) {
-        return function() {
+    function onClose(key) {
+        return function () {
             remove(key);
         };
     }
 
+    const cls = 'zw-message'
 
-    return <div>
+    return <div className={cls} style={{ top: `${conTop}px` }}>
         {
-            state.notices.map((item: any, index: any) => {
-                const height = 40;
-                const style = {
-                    height: `${height}px`,
-                    lineHeight: `${height}px`,
-                    top: `${index * (height + 10) + 50}px`,
-                };
-                return <Notice key={item.key} style={style} onClose={onClose(item.key)} {...item}>{item.message}</Notice>;
+            notices.map((item, index) => {
+                return <Notice key={item.key} onClose={onClose(item.key)} {...item}>{item.content}</Notice>;
             })
         }
     </div>;
