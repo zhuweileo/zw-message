@@ -3,8 +3,23 @@ import { render } from 'react-dom';
 import Notification from './Notification';
 import './index.scss';
 
-const cls = 'zw-message-container';
+export type messageType = 'success' | 'info' | 'warn' | 'error';
+type noticeProps = {
+    content: React.ReactNode;
+    type: messageType;
+    duration?: number;
+    removeCallback?: () => void;
+}
+export type Configs = {
+    maxCount?: number;
+    top?: number,
+    duration?: number;
+}
+export type messageFunc = (msg:React.ReactNode, duration?: number, cb?: () => void ) => void
+export type configFunc = (configs: Configs) => void
+export type Message = { [key in messageType]: messageFunc;} & { config: configFunc;}
 
+const cls = 'zw-message-container';
 let noticeInstance;
 function getNoticeInstance(configs?) {
     return new Promise((resolve, reject) => {
@@ -23,19 +38,12 @@ function getNoticeInstance(configs?) {
     })
 }
 
-type messageType = 'success' | 'info' | 'warn' | 'error';
 
-type noticeProps = {
-    content: React.ReactNode;
-    type: messageType;
-    duration?: number;
-}
-
-function notice({ content, type, duration }: noticeProps) {
+function notice({ content, type, duration, removeCallback }: noticeProps) {
     if (!noticeInstance) {
         getNoticeInstance().then((instance) => {
             noticeInstance = instance;
-            noticeInstance.add({ content, type, duration });
+            noticeInstance.add({ content, type, duration, removeCallback });
         });
         return;
     }
@@ -53,33 +61,22 @@ function config(configs) {
     noticeInstance.config(configs);
 }
 
-type messageFunc = (msg:React.ReactNode, duration?: number, cb?: () => void ) => void
-type configFunc = (msg:React.ReactNode, duration?: number, cb?: () => void ) => void
-
-interface Message {
-    success: messageFunc;
-    info: messageFunc;
-    error: messageFunc;
-    warn: messageFunc;
-    config: configFunc;
-}
-
 const message: Message = {
     success(msg, duration, cb) {
-        notice({ content: msg, type: 'success', duration })
+        notice({ content: msg, type: 'success', duration, removeCallback: cb })
     },
     info(msg, duration, cb) {
-        notice({ content: msg, type: 'info', duration, })
+        notice({ content: msg, type: 'info', duration, removeCallback: cb})
     },
     error(msg, duration, cb) {
-        notice({ content: msg, type: 'info', duration })
+        notice({ content: msg, type: 'info', duration, removeCallback: cb })
     },
     warn(msg, duration, cb) {
-        notice({ content: msg, type: 'warn', duration })
+        notice({ content: msg, type: 'warn', duration, removeCallback: cb })
     },
     config(configs) {
         config(configs)
-    }
+    },
 };
 
 export default message;

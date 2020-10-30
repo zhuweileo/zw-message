@@ -7,6 +7,7 @@ export default function Notice(props: any) {
         style,
         children,
         type = 'info',
+        removeCallback = () => { },
     } = props;
 
     const [isEnd, setIsEnd] = useState(false);
@@ -16,6 +17,7 @@ export default function Notice(props: any) {
             setIsEnd(true);
             setTimeout(function () {
                 onClose();
+                removeCallback();
             }, 500)
         }, duration * 1000);
         return () => {

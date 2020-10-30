@@ -2,27 +2,34 @@ import React, {
     useState, useEffect, forwardRef, useImperativeHandle, useCallback, useReducer, useRef,
 } from 'react';
 import Notice from './Notice';
+import { messageType } from './index';
 
+type Notice = {
+    key: number;
+    content: React.ReactNode;
+    type: messageType;
+    duration: number;
+    removeCallback: () => void;
+}
 
 let seed = 0;
 function getUuid() {
     return `zw-message-${seed++}`;
 }
 
-const initNotices = [];
-
+const initNotices: Notice[] = [];
 function reducer(state, action) {
     switch (action.type) {
         case 'add': {
-            const { maxCount } = action; 
+            const { maxCount } = action;
             const origin = [...state, action.item];
             let res = [];
-            if(maxCount && origin.length > maxCount) {
+            if (maxCount && origin.length > maxCount) {
                 res = origin.slice(origin.length - maxCount);
             } else {
                 res = origin;
             }
-            
+
             return res;
         }
         case 'remove': {
@@ -47,7 +54,7 @@ function Notification(props, ref) {
     const maxCountRef = useRef(defaultConfig.maxCount);
     const durationRef = useRef(defaultConfig.duration);
 
-    function add({ content, type, duration }) {
+    function add({ content, type, duration, removeCallback }) {
         dispatch({
             type: 'add',
             maxCount: maxCountRef.current,
@@ -55,7 +62,8 @@ function Notification(props, ref) {
                 key: getUuid(),
                 content,
                 type,
-                duration: duration || durationRef.current, 
+                duration: duration || durationRef.current,
+                removeCallback,
             }
         });
     }
