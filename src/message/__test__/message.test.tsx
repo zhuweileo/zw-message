@@ -1,5 +1,5 @@
 import React from "react";
-import { render, act } from "@testing-library/react";
+import { render, act, waitFor } from "@testing-library/react";
 // import { act } from "@testing-library/test-utils";
 
 
@@ -21,14 +21,17 @@ describe("Test Component", () => {
         expect(message).toEqual(desirMessage);
     });
 
-    it("should have primary className with default props", () => {
+    it("should have primary className with default props", async () => {
 
         message.success('hahaha', {
             TEST_RENDER: (node) => {
                 const { baseElement, getByTestId } = render(node);
-                const testComponent = getByTestId('zw-message');
-                expect(testComponent).toHaveClass('lalalalal');
             }
+        })
+
+        await waitFor(() => {
+            const testComponent = document.querySelector('.zw-message');
+            expect(testComponent).toHaveClass('zw-message');
         })
     });
 
