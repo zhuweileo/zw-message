@@ -101,7 +101,7 @@ function Notification(props, ref) {
 
     const cls = 'zw-message'
 
-    return <div className={cls} style={{ top: `${conTop}px` }}>
+    return <div data-testid='zw-message' className={cls} style={{ top: `${conTop}px` }}>
         {
             notices.map((item, index) => {
                 return <Notice key={item.key} onClose={onClose(item.key)} {...item}>{item.content}</Notice>;

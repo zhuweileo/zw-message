@@ -9,19 +9,30 @@ type noticeProps = {
     type: messageType;
     duration?: number;
     removeCallback?: () => void;
+    TESTUTIL?;
 }
 export type Configs = {
     maxCount?: number;
     top?: number,
     duration?: number;
 }
-export type messageFunc = (msg:React.ReactNode, duration?: number, cb?: () => void ) => void
+type TEST = {
+    TEST_RENDER: (node: React.ReactElement) => void
+}
+
+export type messageFunc = {
+    (msg: React.ReactNode, duration?: number, cb?: () => void, TESTUTIL?: TEST): void;
+    (msg: React.ReactNode, duration?: number, TESTUTIL?: TEST): void;
+    (msg: React.ReactNode, cb?: () => void, TESTUTIL?: TEST): void;
+    (msg: React.ReactNode, TESTUTIL?: TEST): void;
+}
+
 export type configFunc = (configs: Configs) => void
-export type Message = { [key in messageType]: messageFunc;} & { config: configFunc;}
+export type Message = { [key in messageType]: messageFunc; } & { config: configFunc; }
 
 const cls = 'zw-message-container';
 let noticeInstance;
-function getNoticeInstance(configs?) {
+function getNoticeInstance(TESTUTIL) {
     return new Promise((resolve, reject) => {
         let container = document.querySelector(`.${cls}`);
         if (!container) {
@@ -34,14 +45,21 @@ function getNoticeInstance(configs?) {
                 resolve(instance);
             }
         }
+        if (process.env.NODE_ENV === 'test') {
+            if (TESTUTIL) {
+                const { TEST_RENDER } = TESTUTIL;
+                TEST_RENDER(<Notification ref={ref} />)
+            }
+            return;
+        }
         render(<Notification ref={ref} />, container);
     })
 }
 
 
-function notice({ content, type, duration, removeCallback }: noticeProps) {
+function notice({ content, type, duration, removeCallback, TESTUTIL }: noticeProps) {
     if (!noticeInstance) {
-        getNoticeInstance().then((instance) => {
+        getNoticeInstance(TESTUTIL).then((instance) => {
             noticeInstance = instance;
             noticeInstance.add({ content, type, duration, removeCallback });
         });
@@ -50,9 +68,9 @@ function notice({ content, type, duration, removeCallback }: noticeProps) {
     noticeInstance.add({ content, type, duration, removeCallback });
 }
 
-function config(configs) {
+function config(configs, TESTUTIL?) {
     if (!noticeInstance) {
-        getNoticeInstance().then((instance) => {
+        getNoticeInstance(TESTUTIL).then((instance) => {
             noticeInstance = instance;
             noticeInstance.config(configs);
         });
@@ -63,16 +81,18 @@ function config(configs) {
 
 function transformArgs(args) {
     const arr = [].slice.call(args, 1);
-    if(arr.length === 1) {
+    if (arr.length === 1) {
         return {
             duration: typeof arr[0] === 'number' ? arr[0] : undefined,
             cb: typeof arr[0] === 'function' ? arr[0] : undefined,
+            TESTUTIL: typeof arr[0] === 'object' ? arr[0] : undefined,
         }
     }
     if (arr.length > 1) {
         return {
             duration: typeof arr[0] === 'number' ? arr[0] : undefined,
             cb: typeof arr[1] === 'function' ? arr[1] : undefined,
+            TESTUTIL: typeof arr[2] === 'object' ? arr[2] : undefined,
         }
     }
     return {
@@ -83,12 +103,12 @@ function transformArgs(args) {
 
 const message: Message = {
     success(msg) {
-        const { duration, cb } = transformArgs(arguments);
-        notice({ content: msg, type: 'success', duration, removeCallback: cb })
+        const { duration, cb, TESTUTIL } = transformArgs(arguments);
+        notice({ content: msg, type: 'success', duration, removeCallback: cb, TESTUTIL })
     },
     info(msg) {
         const { duration, cb } = transformArgs(arguments);
-        notice({ content: msg, type: 'info', duration, removeCallback: cb})
+        notice({ content: msg, type: 'info', duration, removeCallback: cb })
     },
     error(msg) {
         const { duration, cb } = transformArgs(arguments);
@@ -98,8 +118,8 @@ const message: Message = {
         const { duration, cb } = transformArgs(arguments);
         notice({ content: msg, type: 'warn', duration, removeCallback: cb })
     },
-    config(configs) {
-        config(configs)
+    config(configs, TESTUTIL?) {
+        config(configs, TESTUTIL)
     },
 };
 
