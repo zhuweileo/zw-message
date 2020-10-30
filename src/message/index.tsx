@@ -47,7 +47,7 @@ function notice({ content, type, duration, removeCallback }: noticeProps) {
         });
         return;
     }
-    noticeInstance.add({ content, type, duration });
+    noticeInstance.add({ content, type, duration, removeCallback });
 }
 
 function config(configs) {
@@ -61,17 +61,41 @@ function config(configs) {
     noticeInstance.config(configs);
 }
 
+function transformArgs(args) {
+    const arr = [].slice.call(args, 1);
+    if(arr.length === 1) {
+        return {
+            duration: typeof arr[0] === 'number' ? arr[0] : undefined,
+            cb: typeof arr[0] === 'function' ? arr[0] : undefined,
+        }
+    }
+    if (arr.length > 1) {
+        return {
+            duration: typeof arr[0] === 'number' ? arr[0] : undefined,
+            cb: typeof arr[1] === 'function' ? arr[1] : undefined,
+        }
+    }
+    return {
+        duration: undefined,
+        cb: undefined
+    }
+}
+
 const message: Message = {
-    success(msg, duration, cb) {
+    success(msg) {
+        const { duration, cb } = transformArgs(arguments);
         notice({ content: msg, type: 'success', duration, removeCallback: cb })
     },
-    info(msg, duration, cb) {
+    info(msg) {
+        const { duration, cb } = transformArgs(arguments);
         notice({ content: msg, type: 'info', duration, removeCallback: cb})
     },
-    error(msg, duration, cb) {
-        notice({ content: msg, type: 'info', duration, removeCallback: cb })
+    error(msg) {
+        const { duration, cb } = transformArgs(arguments);
+        notice({ content: msg, type: 'error', duration, removeCallback: cb })
     },
-    warn(msg, duration, cb) {
+    warn(msg) {
+        const { duration, cb } = transformArgs(arguments);
         notice({ content: msg, type: 'warn', duration, removeCallback: cb })
     },
     config(configs) {

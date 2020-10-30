@@ -16,12 +16,12 @@ export default [
 				file: pkg.main,
 				name: 'zwMessage',
 				format: "umd",
-				// sourcemap: true,
 				exports: 'auto',
 				globals: {
 					react: 'React',
 					'react-dom': 'reactDom',
-				}
+				},
+				// sourcemap: true
 			},
 			{
 				file: pkg.module,

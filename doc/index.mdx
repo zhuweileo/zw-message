@@ -18,3 +18,56 @@ import message from '../src/message/index.tsx';
     }
     </div>
 </Playground>
+
+## config
+
+<Playground>
+    {
+        () => {
+            message.config({
+                maxCount: 5,
+            })
+            return <button onClick={() => message.info('maxCount 5')}>maxCount 5</button>
+        }
+    }
+</Playground>
+
+
+## duration
+
+<Playground>
+    {
+        () => {
+            return <div>
+                <button onClick={() => message.info('duration 5s', 5)}>duration 5s</button>
+                <button onClick={() => message.info('duration 1s', 1)}>duration 1s</button>
+            </div> 
+        }
+    }
+</Playground>
+
+## removeCallback
+<Playground>
+    {
+        () => {
+            function removeCallback() {
+                alert('removed')
+            }
+            return <div>
+                <button onClick={() => message.info('alert callback', removeCallback)}>duration 5s</button>
+            </div> 
+        }
+    }
+</Playground>
+
+## methods
+success | info | warn | error
+
+```typescript
+(content: React.ReactNode, duration?:number, removeCallback?: () => void) => void
+```
+
+config
+```typescript
+({top: number, maxCount: number, duration: number}) => void
+```

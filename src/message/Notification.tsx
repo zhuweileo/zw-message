@@ -73,12 +73,15 @@ function Notification(props, ref) {
     }
 
     function config(configs) {
-        const { maxCount, top } = configs;
+        const { maxCount, top, duration } = configs;
         if (top) {
             setConTop(top);
         }
         if (maxCount) {
             maxCountRef.current = maxCount;
+        }
+        if (duration) {
+            durationRef.current = duration;
         }
     }
 
